@@ -1,0 +1,110 @@
+Configuration:
+
+  name: Default
+  status: info
+  
+  Properties:
+    Property:
+      - name: logging-pattern
+        value: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%5p] [${sys:PID}-(%t)] [%l]  %m%n%wEx'
+      - name: log-path
+        value: 'logs'
+      - name: archive-log-path
+        value: ${log-path}/archive
+      - name: app-rollover-days
+        value: '1'   
+      - name: lib-rollover-days
+        value: '1'          
+      - name: app-rollover-size
+        value: '100 MB'                  
+      - name: lib-rollover-size
+        value: '20 MB'
+      - name: lib-level
+        value: 'INFO'
+      - name: app-level
+        value: 'INFO'
+      - name: application-name
+        value: 'SpringTokenAnkush'
+    
+  Appenders:
+    Console:
+      name: CONSOLE
+      target: SYSTEM_OUT
+      PatternLayout:
+        Pattern: ${logging-pattern}
+    RollingFile:      
+      - name: SpringTokenAnkush
+        fileName: ${log-path}/${application-name}.log
+        filePattern: ${archive-log-path}/$${date:yyyy-MM}/${application-name}-%d{yyyy-MM-dd}-%i.log.gz
+        PatternLayout:
+          Pattern: ${logging-pattern}
+        policies:
+          TimeBasedTriggeringPolicy:
+            interval: ${app-rollover-days}
+            modulate: true
+          SizeBasedTriggeringPolicy:
+            size: ${app-rollover-size}
+        DefaultRollOverStrategy:
+          max: 999
+      - name: LIBS
+        fileName: ${log-path}/${application-name}-libs.log
+        filePattern: ${archive-log-path}/$${date:yyyy-MM}/${application-name}-libs-%d{yyyy-MM-dd}-%i.log.gz
+        PatternLayout:
+          Pattern: ${logging-pattern}
+        policies:
+          TimeBasedTriggeringPolicy:
+            interval: ${lib-rollover-days}
+            modulate: true
+          SizeBasedTriggeringPolicy:
+            size: ${lib-rollover-size}
+  Loggers:
+    Root:
+      level: info
+      AppenderRef:
+        - ref: CONSOLE
+    Logger:
+      - name: com.netflix
+        additivity: false
+        level: error
+        AppenderRef:
+          - ref: LIBS
+      - name: org.springframework
+        additivity: false
+        level: ${lib-level}
+        AppenderRef:
+          - ref: LIBS   
+      - name: org.apache.http
+        additivity: false
+        level: ${lib-level}
+        AppenderRef:
+          - ref: LIBS   
+      - name: com.netflix.loadbalance
+        additivity: false
+        level: ${lib-level}
+        AppenderRef:
+          - ref: LIBS   
+      - name: org.hibernate
+        additivity: false
+        level: ${lib-level}
+        AppenderRef:
+          - ref: LIBS
+      - name: org.thymeleaf
+        additivity: false
+        level: ${lib-level}
+        AppenderRef:
+          - ref: LIBS      
+      - name: com.token.ankush
+        additivity: false
+        level: ${app-level}
+        AppenderRef:
+          - ref: SpringTokenAnkush
+      - name: springfox
+        additivity: false
+        level: ${lib-level}
+        AppenderRef:
+          - ref: LIBS
+      - name: com.spotify.google.cloud.pubsub.client.Puller
+        additivity: false
+        level: FATAL
+        AppenderRef:
+        - ref: LIBS

@@ -1,0 +1,114 @@
+buildscript {
+    ext {
+        springBootVersion = '2.0.4.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath('io.spring.gradle:dependency-management-plugin:0.5.4.RELEASE')
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'maven'
+apply plugin: "jacoco"
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'project-report'
+
+jar {
+    baseName = project.app
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+
+group = 'com.token.ankush'
+version = '1.0-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+    maven {
+        url "https://repo.spring.io/milestone"
+    }
+    mavenCentral()
+    mavenLocal()
+}
+
+configurations.all {
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    exclude group: 'org.springframework.boot', module: 'logback-classic'
+}
+
+ext {
+    springCloudVersion = 'Finchley.RELEASE'
+}
+
+dependencies {
+    compile group: 'org.springframework.boot', name:'spring-boot-starter'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-1.2-api', version: '2.7'
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.6.1'
+    compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+    compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.0'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.5'
+    compile group: 'com.jayway.jsonpath', name: 'json-path', version: '2.4.0'
+    compile('org.springframework.boot:spring-boot-starter-web')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    runtime group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.8.5'
+    runtime group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.8.5'
+    testCompile group: 'org.springframework.boot', name:'spring-boot-starter-test'
+    testCompile group: 'org.powermock', name:'powermock-module-junit4', version:'1.7.1'
+    testCompile group: 'org.powermock', name:'powermock-api-mockito', version:'1.7.1'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version:'1.16.16'
+    compile group: 'com.joyent.util', name: 'fast-md5', version: '2.7.1'
+    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+
+    //database
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+    runtime group: 'mysql', name: 'mysql-connector-java', version :'5.1.6'
+
+    //Token dependencies
+    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.6.0'
+
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+
+
+springBoot {
+    mainClassName = 'com.token.ankush.TokenSpringApplication'
+}
+
+bootJar {
+    mainClassName = 'com.token.ankush.TokenSpringApplication'
+}
+
+
+bootRun {
+    systemProperty 'spring.profiles.active', System.properties['spring.profiles.active']
+    def cp = CollectionUtils.join(File.pathSeparator, classpath.getFiles())
+    environment 'CLASSPATH', cp
+    classpath = classpath.filter { false }
+    if (project.hasProperty("debugPort")){
+        jvmArgs = ['-Xdebug', '-Xrunjdwp:server=y,transport=dt_socket,suspend=n,address=' + debugPort]
+    }
+}
+
+
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}

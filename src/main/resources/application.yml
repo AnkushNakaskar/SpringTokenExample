@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: SpringTokenAnkush
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+  jackson:
+    serialization-inclusion: NON_EMPTY
+server:
+  servlet:
+    contextPath:  /api/token
+
+project:
+  group: core
+  team: content
+  application: 'SpringTokenAnkush'

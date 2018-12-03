@@ -1,0 +1,33 @@
+spring:
+  sleuth:
+    enabled : false
+    sampler:
+      percentage: 1.0
+  zipkin:
+    baseUrl:  'http://sample.mobi:9411'
+    enabled:  false
+  datasource:
+    url: 'jdbc:mysql://localhost:3306/blueapple?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf8&autoReconnect=true'
+    username: username
+    password: '<>'
+    driver-class-name: 'com.mysql.jdbc.Driver'
+    tomcat:
+      max-active: 200
+      max-wait: 30000
+      min-idle: 10
+      max-idle: 15
+  jpa:
+    show-sql: true
+
+server:
+  port: 9092
+project:
+  enableTask: true
+management:
+  security:
+    flag: false
+  health:
+    jms:
+      enabled: false
+    rabbit:
+      enabled: false

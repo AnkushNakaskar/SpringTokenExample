@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: SpringTokenAnkush
+
+---
+spring:
+  profiles: default
+  cloud:
+    consul:
+        host: 'localhost'
+        port: 8500
+        discovery:
+          healthCheckPath: '/api/token/health'
