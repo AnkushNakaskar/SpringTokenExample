@@ -1,3 +1,5 @@
+This is Token based application using JWT and It does not need to store on database Since it is calculated on the fly using JWT.io
+
 Run API: http://localhost:9092/api/token/user/login
 IT will return : __Secure-Fgp
  as cookie
