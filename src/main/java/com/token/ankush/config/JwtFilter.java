@@ -9,7 +9,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.token.ankush.utility.SpringTokenUtitlity;
 import io.jsonwebtoken.JwtParser;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import io.jsonwebtoken.Claims;
@@ -25,6 +27,8 @@ public class JwtFilter extends GenericFilterBean {
         final HttpServletResponse response = (HttpServletResponse) res;
         final String authHeader = request.getHeader("authorization");
 
+        String userPrintFromCookie = SpringTokenUtitlity.getUserPrintFromCookie(request);
+        String userFingerprintHash = SpringTokenUtitlity.generateMessageDigest(userPrintFromCookie);
         if ("OPTIONS".equals(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
 
@@ -40,7 +44,13 @@ public class JwtFilter extends GenericFilterBean {
             try {
                 JwtParser parser = Jwts.parser();
                 final Claims claims = parser.setSigningKey("secretkey").parseClaimsJws(token).getBody();
-                request.setAttribute("claims", claims);
+                String claimKey = claims.get("userFingerprint", String.class);
+                if(StringUtils.equalsIgnoreCase(userFingerprintHash,claimKey)){
+                    request.setAttribute("claims", claims);
+                }else{
+                    throw new ServletException("invalid claim for  userFingerprint");
+                }
+
             } catch (final SignatureException e) {
                 throw new ServletException("Invalid token");
             }

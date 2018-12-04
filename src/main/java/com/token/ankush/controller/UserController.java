@@ -3,9 +3,11 @@ package com.token.ankush.controller;
 import java.util.Date;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 
 import com.token.ankush.UserEntity;
 import com.token.ankush.service.UserService;
+import com.token.ankush.utility.SpringTokenUtitlity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +35,7 @@ public class UserController {
 
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String login(@RequestBody UserEntity login) throws ServletException {
+    public String login(@RequestBody UserEntity login, HttpServletResponse response) throws ServletException {
 
         String jwtToken = "";
 
@@ -55,11 +57,9 @@ public class UserController {
         if (!password.equals(pwd)) {
             throw new ServletException("Invalid login. Please check your name and password.");
         }
-
-
-        jwtToken = Jwts.builder().setSubject(email).claim("roles", "user").setIssuedAt(new Date())
-                .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
-
-        return jwtToken;
+        String randomToken = SpringTokenUtitlity.generateRandomUserToken();
+        SpringTokenUtitlity.generateCookiesForresponse(response,randomToken);
+        String subject = SpringTokenUtitlity.generateMessageDigest(randomToken);
+        return SpringTokenUtitlity.generateJWTToken(subject,email);
     }
 }
